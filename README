@@ -1,1 +1,2 @@
 Place com.foundationdb.fdbmonitor.plist in /Library/LaunchDaemons
+Run ./fdbmanage enable
