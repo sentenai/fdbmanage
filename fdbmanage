@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -eu
+
+if [[ $(id -u) -ne 0 ]]; then
+  echo "Must be run as root"
+  exit 126
+fi
+
+CMD="$*"
+
+PLIST="/Library/LaunchDaemons/com.foundationdb.fdbmonitor.plist"
+
+case "$CMD" in
+  "disable")
+    launchctl disable system/com.foundationdb.fdbmonitor
+    ;;
+  "enable")
+    launchctl enable system/com.foundationdb.fdbmonitor
+    ;;
+  "start")
+    launchctl bootstrap system "$PLIST"
+    ;;
+  "stop")
+    launchctl bootout system "$PLIST"
+    ;;
+  "restart")
+    launchctl bootout system "$PLIST"
+    launchctl bootstrap system "$PLIST"
+    ;;
+  "status")
+    if pgrep fdbmonitor &> /dev/null; then echo "running"; else echo "halted"; fi
+    ;;
+  *) echo "Usage: $0 {disable|enable|start|stop|restart|status}" ;;
+esac
