@@ -1,0 +1,7 @@
+.PHONY all install
+
+install:
+  cp fdbmanage $HOME/bin/
+  sudo cp plist/com.foundationdb.fdbmonitor.plist /Library/LaunchDaemons
+
+all: install
