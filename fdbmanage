@@ -2,13 +2,21 @@
 
 set -eu
 
+function usage() {
+  echo "Usage: $0 {start|stop|restart|status}"
+  exit 127
+}
+
 if [[ $(id -u) -ne 0 ]]; then
   echo "Must be run as root"
   exit 126
 fi
 
-CMD="$*"
+if [[ $# -ne 1 ]]; then
+  usage
+fi
 
+CMD="$1"
 PLIST="/Library/LaunchDaemons/com.foundationdb.fdbmonitor.plist"
 
 case "$CMD" in
@@ -25,11 +33,11 @@ case "$CMD" in
     launchctl bootout system "$PLIST"
     ;;
   "restart")
-    launchctl bootout system "$PLIST"
-    launchctl bootstrap system "$PLIST"
+    launchctl bootout system  "$PLIST"
+    launchctl bootstrap system/501 "$PLIST"
     ;;
   "status")
-    if pgrep fdbmonitor &> /dev/null; then echo "running"; else echo "halted"; fi
+    if pgrep -q fdbmonitor; then echo "running"; else echo "halted"; fi
     ;;
-  *) echo "Usage: $0 {disable|enable|start|stop|restart|status}" ;;
+  *) usage ;;
 esac
